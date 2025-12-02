@@ -1,0 +1,27 @@
+[
+  {
+    "date": "2025-06-04",
+    "campaign_id": "CAMP-123",
+    "spend": 37.5
+  },
+  {
+    "date": "2025-06-04",
+    "campaign_id": "CAMP-456",
+    "spend": 19.9
+  },
+  {
+    "date": "2025-06-05",
+    "campaign_id": "CAMP-123",
+    "spend": 42.1
+  },
+  {
+    "date": "2025-06-05",
+    "campaign_id": "CAMP-789",
+    "spend": 11
+  },
+  {
+    "date": "2025-06-06",
+    "campaign_id": "CAMP-999",
+    "spend": 5.25
+  }
+]
