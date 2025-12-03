@@ -10,12 +10,15 @@ def main():
 
         args = settings.parser.parse_args()
 
-        if args.start_date != None:
+        if args.start_date != None and args.end_date != None:
             start_date = datetime.strptime(args.start_date, '%Y-%m-%d').date().isoformat()
             end_date = datetime.strptime(args.end_date, '%Y-%m-%d').date().isoformat()
 
             settings.logging.info(f'Start date argument: {start_date} | End date argument: {end_date}')
         else:
+            start_date = datetime.strptime('2025-06-04', '%Y-%m-%d').date().isoformat()
+            end_date = datetime.strptime('2025-06-04', '%Y-%m-%d').date().isoformat()
+
             settings.logging.warning('No start-end arguments passed. Using default values')
 
         cursor = connection.cursor()
@@ -25,15 +28,27 @@ def main():
         ON CONFLICT(date, campaign_id) DO UPDATE SET spend=excluded.spend, conversions=excluded.conversions, cpa=excluded.cpa;
         '''
 
+        upsert_values = aggregate_data(settings.fb_spend, settings.network_conv, start_date, end_date)
+
+        for upsert_value in upsert_values:
+            cursor.execute(upsert_query, upsert_value)
+            settings.logging.info(f'daily_stats table upserted with: {upsert_value}')
+
+        connection.commit()
+        settings.logging.info(f'Changes committed to sales_brush_test.db')
+
+
+def aggregate_data(fb_spend, network_conv, start_date, end_date):
         data_fb = list()
         data_network = list()
+        upsert_values = list()
 
-        for fb in settings.fb_spend:
+        for fb in fb_spend:
             date = fb['date']
             if start_date <= date <= end_date:
                 data_fb.append(fb)
     
-        for network in settings.network_conv:
+        for network in network_conv:
             date = network['date']
             if start_date <= date <= end_date:
                 data_network.append(network)
@@ -43,18 +58,13 @@ def main():
                 data = data_fb[i] | data_network[i]
 
                 try:
-                    cpa = data['spend'] / data['conversions']
+                    cpa = round(data['spend'] / data['conversions'], 2)
                 except ZeroDivisionError:
                     cpa = None
 
-                upsert_values = (data['date'], data['campaign_id'], data['spend'], data['conversions'], round(cpa, 2))
+                upsert_values.append((data['date'], data['campaign_id'], data['spend'], data['conversions'], cpa))
 
-                cursor.execute(upsert_query, upsert_values)        
-                settings.logging.info(f'daily_stats table upserted with: {upsert_values}')
-
-        connection.commit()
-        settings.logging.info(f'Changes committed to sales_brush_test.db')
-
+        return upsert_values
 
 if __name__ == "__main__":
     main()
