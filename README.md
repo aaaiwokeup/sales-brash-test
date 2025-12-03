@@ -36,3 +36,8 @@ or
 python scheduler.py --start-date 2025-06-04 --end-date 2025-06-04
 ```
 Pass arguments --start-date or -s and --end-date or -e in ISO format YYYY-MM-DD
+
+### Run tests
+```bash
+python -m pytest
+```
