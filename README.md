@@ -11,6 +11,12 @@ docker run sales-brush-test --start-date 2025-06-04 --end-date 2025-06-04
 
 Pass arguments --start-date or -s and --end-date or -e in ISO format YYYY-MM-DD
 
+If arguments didn't passed, then default are used 
+```
+--start-date 2025-06-04
+--end-date 2025-06-04
+```
+
 # Locally
 ### Create virtual environmet
 ```bash
@@ -36,6 +42,12 @@ or
 python scheduler.py --start-date 2025-06-04 --end-date 2025-06-04
 ```
 Pass arguments --start-date or -s and --end-date or -e in ISO format YYYY-MM-DD
+
+If arguments didn't passed, then default are used ^
+```
+--start-date 2025-06-04
+--end-date 2025-06-04
+```
 
 ### Run tests
 ```bash
